@@ -152,26 +152,25 @@ async function updateStatus() {
             
             if (trackName) trackName.textContent = data.current_track.name;
             if (trackArtist) {
-                // Safely create content to prevent XSS
-                trackArtist.innerHTML = '';
-                const icon = document.createElement('i');
-                icon.className = 'bi bi-person';
-                trackArtist.appendChild(icon);
-                trackArtist.appendChild(document.createTextNode(' ' + data.current_track.artist));
+                setElementWithIcon(trackArtist, 'bi-person', data.current_track.artist);
             }
             if (trackAlbum) {
-                // Safely create content to prevent XSS
-                trackAlbum.innerHTML = '';
-                const icon = document.createElement('i');
-                icon.className = 'bi bi-disc';
-                trackAlbum.appendChild(icon);
-                trackAlbum.appendChild(document.createTextNode(' ' + data.current_track.album));
+                setElementWithIcon(trackAlbum, 'bi-disc', data.current_track.album);
             }
         }
         
     } catch (error) {
         console.error('Error updating status:', error);
     }
+}
+
+// Utility: Set element content with icon (XSS-safe)
+function setElementWithIcon(element, iconClass, text) {
+    element.innerHTML = '';
+    const icon = document.createElement('i');
+    icon.className = 'bi ' + iconClass;
+    element.appendChild(icon);
+    element.appendChild(document.createTextNode(' ' + text));
 }
 
 // Utility: RGB to Hex

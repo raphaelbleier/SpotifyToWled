@@ -72,11 +72,20 @@ def register_routes(app):
         try:
             client_id = request.form.get('client_id', '').strip()
             client_secret = request.form.get('client_secret', '').strip()
-            refresh_interval = int(request.form.get('refresh_interval', 30))
+            
+            # Validate and convert refresh interval with proper error handling
+            try:
+                refresh_interval = int(request.form.get('refresh_interval', 30))
+                if refresh_interval < 1:
+                    flash('Refresh interval must be at least 1 second', 'warning')
+                    return redirect(url_for('index'))
+            except (ValueError, TypeError):
+                flash('Invalid refresh interval. Please enter a valid number.', 'warning')
+                return redirect(url_for('index'))
             
             config.set('SPOTIFY_CLIENT_ID', client_id)
             config.set('SPOTIFY_CLIENT_SECRET', client_secret)
-            config.set('REFRESH_INTERVAL', max(1, refresh_interval))
+            config.set('REFRESH_INTERVAL', refresh_interval)
             
             config.save()
             
@@ -84,7 +93,7 @@ def register_routes(app):
             return redirect(url_for('index'))
         except Exception as e:
             logger.error(f"Error updating config: {e}")
-            flash(f'Error updating configuration: {e}', 'danger')
+            flash('Error updating configuration. Please try again.', 'danger')
             return redirect(url_for('index'))
     
     @app.route('/api/config/color-method', methods=['POST'])

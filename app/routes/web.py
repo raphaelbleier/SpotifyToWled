@@ -54,7 +54,7 @@ def register_routes(app):
                 return jsonify({'success': False, 'message': 'Failed to start sync. Check configuration.'}), 400
         except Exception as e:
             logger.error(f"Error starting sync: {e}")
-            return jsonify({'success': False, 'message': str(e)}), 500
+            return jsonify({'success': False, 'message': 'An error occurred while starting sync'}), 500
     
     @app.route('/api/sync/stop', methods=['POST'])
     def api_sync_stop():
@@ -64,7 +64,7 @@ def register_routes(app):
             return jsonify({'success': True, 'message': 'Sync stopped'})
         except Exception as e:
             logger.error(f"Error stopping sync: {e}")
-            return jsonify({'success': False, 'message': str(e)}), 500
+            return jsonify({'success': False, 'message': 'An error occurred while stopping sync'}), 500
     
     @app.route('/api/config/update', methods=['POST'])
     def api_config_update():
@@ -100,7 +100,7 @@ def register_routes(app):
                 return jsonify({'success': False, 'message': 'Invalid method'}), 400
         except Exception as e:
             logger.error(f"Error updating color method: {e}")
-            return jsonify({'success': False, 'message': str(e)}), 500
+            return jsonify({'success': False, 'message': 'An error occurred while updating color method'}), 500
     
     @app.route('/api/wled/add', methods=['POST'])
     def api_wled_add():
@@ -145,7 +145,7 @@ def register_routes(app):
                 return jsonify({'success': False, 'message': 'Device not found'}), 404
         except Exception as e:
             logger.error(f"Error removing WLED device: {e}")
-            return jsonify({'success': False, 'message': str(e)}), 500
+            return jsonify({'success': False, 'message': 'An error occurred while removing device'}), 500
     
     @app.route('/api/wled/health')
     def api_wled_health():
@@ -162,7 +162,7 @@ def register_routes(app):
             })
         except Exception as e:
             logger.error(f"Error checking WLED health: {e}")
-            return jsonify({'success': False, 'message': str(e)}), 500
+            return jsonify({'success': False, 'message': 'An error occurred while checking device health'}), 500
     
     @app.route('/health')
     def health_check():

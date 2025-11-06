@@ -151,8 +151,22 @@ async function updateStatus() {
             const trackAlbum = document.getElementById('trackAlbum');
             
             if (trackName) trackName.textContent = data.current_track.name;
-            if (trackArtist) trackArtist.innerHTML = `<i class="bi bi-person"></i> ${data.current_track.artist}`;
-            if (trackAlbum) trackAlbum.innerHTML = `<i class="bi bi-disc"></i> ${data.current_track.album}`;
+            if (trackArtist) {
+                // Safely create content to prevent XSS
+                trackArtist.innerHTML = '';
+                const icon = document.createElement('i');
+                icon.className = 'bi bi-person';
+                trackArtist.appendChild(icon);
+                trackArtist.appendChild(document.createTextNode(' ' + data.current_track.artist));
+            }
+            if (trackAlbum) {
+                // Safely create content to prevent XSS
+                trackAlbum.innerHTML = '';
+                const icon = document.createElement('i');
+                icon.className = 'bi bi-disc';
+                trackAlbum.appendChild(icon);
+                trackAlbum.appendChild(document.createTextNode(' ' + data.current_track.album));
+            }
         }
         
     } catch (error) {
@@ -198,10 +212,18 @@ function showToast(message, type = 'info') {
     const toast = document.createElement('div');
     toast.className = `alert alert-${type} alert-dismissible fade show`;
     toast.style.cssText = 'position: fixed; top: 70px; right: 20px; z-index: 1050; min-width: 300px;';
-    toast.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
+    
+    // Create text node to prevent XSS
+    const messageNode = document.createTextNode(message);
+    toast.appendChild(messageNode);
+    
+    // Add close button
+    const closeButton = document.createElement('button');
+    closeButton.type = 'button';
+    closeButton.className = 'btn-close';
+    closeButton.setAttribute('data-bs-dismiss', 'alert');
+    toast.appendChild(closeButton);
+    
     document.body.appendChild(toast);
     
     // Auto-dismiss after 3 seconds

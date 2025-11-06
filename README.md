@@ -14,18 +14,52 @@ Bring your music to life! **SpotifyToWLED** syncs the color palette of your Spot
 - 💡 **Advanced WLED controls** (brightness, effects)
 - 📡 **Health monitoring** for devices and API connections
 - 📝 **Comprehensive logging** for debugging
+- 🐳 **Docker support** with easy Portainer deployment
+- 🏠 **Home Assistant add-on** for seamless smart home integration
 
 ---
 
 ## 🚀 Quick Start
 
-### Prerequisites
+Choose your deployment method:
 
+### 🐳 Docker (Recommended for Portainer)
+
+**Quick start:**
+```bash
+docker run -d \
+  --name spotifytowled \
+  -p 5000:5000 \
+  -v $(pwd)/config:/config \
+  -v $(pwd)/data:/data \
+  --restart unless-stopped \
+  ghcr.io/raphaelbleier/spotifytowled:latest
+```
+
+**Or with Docker Compose:**
+```bash
+docker-compose up -d
+```
+
+📖 **[Full Docker & Portainer Guide →](DOCKER.md)**
+
+### 🏠 Home Assistant Add-on
+
+1. Add repository: `https://github.com/raphaelbleier/SpotifyToWled`
+2. Install **SpotifyToWLED** add-on
+3. Configure and start
+4. Open Web UI
+
+📖 **[Full Home Assistant Guide →](HOMEASSISTANT.md)**
+
+### 🐍 Python (Manual Installation)
+
+**Prerequisites:**
 - Python 3.8 or higher
 - A **Spotify Developer App** (free): [Create one here](https://developer.spotify.com/dashboard)
 - One or more **WLED devices** on your network
 
-### Installation
+**Installation:**
 
 1. **Clone the repository**:
    ```bash
@@ -128,6 +162,29 @@ Configuration is stored in `config.json` (auto-generated on first run). You can 
   "RETRY_DELAY": 2
 }
 ```
+
+---
+
+## 🚢 Deployment Options
+
+### Docker & Portainer
+Perfect for home servers and NAS devices. Includes health checks and automatic restarts.
+- **[Docker Deployment Guide](DOCKER.md)** - Complete guide for Docker and Portainer
+- Pre-built images available on GitHub Container Registry
+- Simple volume mapping for configuration persistence
+
+### Home Assistant
+Native integration with Home Assistant supervisor.
+- **[Home Assistant Guide](HOMEASSISTANT.md)** - Complete integration guide
+- Official add-on available
+- Ingress support for seamless UI access
+- Automation examples included
+
+### Manual Python
+Traditional installation for development or custom setups.
+- Full control over environment
+- Easy debugging and development
+- See Quick Start section above
 
 ---
 

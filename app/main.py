@@ -2,9 +2,13 @@
 Main application entry point
 """
 import logging
+import os
 from flask import Flask
 from app.routes.web import register_routes
 from app.core.config import config
+
+# Get log path from environment or use default
+log_path = os.environ.get('LOG_PATH', 'spotifytowled.log')
 
 # Configure logging
 logging.basicConfig(
@@ -12,7 +16,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
         logging.StreamHandler(),
-        logging.FileHandler('spotifytowled.log')
+        logging.FileHandler(log_path)
     ]
 )
 
@@ -36,7 +40,8 @@ def main():
     app = create_app()
     
     # Run the application
-    port = config.get('PORT', 5000)
+    # Port can be set via environment variable (for Docker/HA) or config
+    port = int(os.environ.get('PORT', config.get('PORT', 5000)))
     debug = config.get('DEBUG', False)
     
     logger.info(f"Starting server on port {port}")

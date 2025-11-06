@@ -25,7 +25,11 @@ class Config:
         "RETRY_DELAY": 2,
     }
     
-    def __init__(self, config_path: str = "config.json"):
+    def __init__(self, config_path: str = None):
+        # Allow config path to be set via environment variable (for Docker/HA)
+        if config_path is None:
+            config_path = os.environ.get('CONFIG_PATH', 'config.json')
+        
         self.config_path = Path(config_path)
         self.data = self.DEFAULT_CONFIG.copy()
         self.is_running = False

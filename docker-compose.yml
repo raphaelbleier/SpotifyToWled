@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  spotifytowled:
+    build: .
+    container_name: spotifytowled
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./config:/config
+      - ./data:/data
+    environment:
+      - CONFIG_PATH=/config/config.json
+      - LOG_PATH=/data/spotifytowled.log
+      - TZ=Europe/Berlin
+    networks:
+      - spotifytowled
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5000/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  spotifytowled:
+    driver: bridge

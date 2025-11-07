@@ -1,0 +1,155 @@
+/* Custom Styles for SpotifyToWLED */
+
+:root {
+    --spotify-green: #1DB954;
+    --wled-red: #DC3545;
+    --dark-bg: #212529;
+}
+
+body {
+    background-color: #f8f9fa;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Color Display */
+.color-preview {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 4px solid #fff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.color-preview:hover {
+    transform: scale(1.05);
+}
+
+.color-info {
+    font-size: 0.9rem;
+    margin: 0.25rem 0;
+}
+
+/* Album Display */
+.album-placeholder {
+    width: 100%;
+    height: 200px;
+    background-color: #e9ecef;
+    border-radius: 8px;
+}
+
+/* Color History */
+.color-history {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.color-history-item {
+    text-align: center;
+    flex: 0 0 auto;
+}
+
+.color-history-box {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.color-history-box:hover {
+    transform: scale(1.1);
+}
+
+.color-history-label {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.7rem;
+    color: #6c757d;
+}
+
+/* WLED Devices */
+.wled-device-item {
+    background-color: #f8f9fa;
+    transition: background-color 0.2s;
+}
+
+.wled-device-item:hover {
+    background-color: #e9ecef;
+}
+
+/* Health Metrics */
+.health-metric {
+    padding: 20px;
+}
+
+.health-metric i {
+    opacity: 0.8;
+}
+
+/* Animations */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.loading {
+    animation: pulse 1.5s infinite;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .color-preview {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .health-metric {
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+}
+
+/* Custom button styles */
+.btn-success {
+    background-color: var(--spotify-green);
+    border-color: var(--spotify-green);
+}
+
+.btn-success:hover {
+    background-color: #1ed760;
+    border-color: #1ed760;
+}
+
+.btn-danger {
+    background-color: var(--wled-red);
+    border-color: var(--wled-red);
+}
+
+/* Toast notifications */
+.toast-container {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    z-index: 1050;
+}

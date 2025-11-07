@@ -1,0 +1,44 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Config and data (mounted as volumes)
+config.json
+*.log
+.cache
+.cache-*
+
+# Documentation
+*.md
+!README.md
+
+# Legacy
+wled.py.legacy
+
+# Tests
+tests/
+
+# Data directories
+config/
+data/

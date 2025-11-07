@@ -1,0 +1,41 @@
+{
+  "name": "SpotifyToWLED",
+  "version": "2.0.0",
+  "slug": "spotifytowled",
+  "description": "Sync Spotify album colors with WLED devices",
+  "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
+  "startup": "application",
+  "boot": "auto",
+  "init": false,
+  "ports": {
+    "5000/tcp": 5000
+  },
+  "ports_description": {
+    "5000/tcp": "Web interface"
+  },
+  "webui": "http://[HOST]:[PORT:5000]",
+  "ingress": true,
+  "ingress_port": 5000,
+  "panel_icon": "mdi:spotify",
+  "hassio_api": true,
+  "hassio_role": "default",
+  "homeassistant_api": true,
+  "auth_api": false,
+  "options": {
+    "spotify_client_id": "",
+    "spotify_client_secret": "",
+    "wled_ips": [],
+    "refresh_interval": 30,
+    "cache_duration": 5,
+    "color_extraction_method": "vibrant"
+  },
+  "schema": {
+    "spotify_client_id": "str",
+    "spotify_client_secret": "password",
+    "wled_ips": ["str"],
+    "refresh_interval": "int(1,600)?",
+    "cache_duration": "int(1,60)?",
+    "color_extraction_method": "list(vibrant|dominant|average)?"
+  },
+  "image": "ghcr.io/raphaelbleier/spotifytowled-{arch}"
+}

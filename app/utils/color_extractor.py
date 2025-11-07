@@ -6,7 +6,6 @@ import logging
 from io import BytesIO
 from colorthief import ColorThief
 from typing import Tuple
-from functools import lru_cache
 from time import time
 
 logger = logging.getLogger(__name__)

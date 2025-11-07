@@ -4,8 +4,7 @@ Spotify API manager with improved error handling
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import logging
-from typing import Optional, Dict, Tuple
-from time import time
+from typing import Optional, Dict
 
 logger = logging.getLogger(__name__)
 
@@ -133,8 +132,8 @@ class SpotifyManager:
             if current_track_id != self._last_track_id:
                 self._last_track_id = current_track_id
                 return True
-        except (KeyError, TypeError):
-            pass
+        except (KeyError, TypeError) as e:
+            logger.debug(f"Could not extract track ID for change detection: {e}")
         
         return False
     

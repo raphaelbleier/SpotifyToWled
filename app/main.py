@@ -26,7 +26,12 @@ logger = logging.getLogger(__name__)
 def create_app():
     """Create and configure the Flask application"""
     app = Flask(__name__)
-    app.secret_key = config.get('SECRET_KEY', 'dev-secret-key-change-in-production')
+    
+    # Configure secret key with security warning
+    secret_key = config.get('SECRET_KEY', 'dev-secret-key-change-in-production')
+    if secret_key == 'dev-secret-key-change-in-production':
+        logger.warning("⚠️  Default secret key is being used! This is insecure for production. Please set SECRET_KEY in your configuration.")
+    app.secret_key = secret_key
     
     # Register routes
     register_routes(app)

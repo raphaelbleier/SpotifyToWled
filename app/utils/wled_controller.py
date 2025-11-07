@@ -3,7 +3,7 @@ WLED device controller with retry logic and health checks
 """
 import requests
 import logging
-from typing import Tuple, Dict, List, Optional
+from typing import Dict, List, Optional
 from time import sleep
 
 logger = logging.getLogger(__name__)

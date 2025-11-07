@@ -55,7 +55,7 @@ docker-compose up -d
 ### 🐍 Python (Manual Installation)
 
 **Prerequisites:**
-- Python 3.8 or higher
+- Python 3.9 or higher
 - A **Spotify Developer App** (free): [Create one here](https://developer.spotify.com/dashboard)
 - One or more **WLED devices** on your network
 

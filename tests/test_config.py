@@ -4,7 +4,6 @@ Unit tests for configuration management
 import unittest
 import tempfile
 import os
-import json
 from app.core.config import Config
 
 

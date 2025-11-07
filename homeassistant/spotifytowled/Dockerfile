@@ -12,7 +12,8 @@ RUN apk add --no-cache \
     python3-dev \
     musl-dev \
     jpeg-dev \
-    zlib-dev
+    zlib-dev \
+    jq
 
 # Set working directory
 WORKDIR /app

@@ -14,20 +14,26 @@ COLOR_METHOD=$(bashio::config 'color_extraction_method')
 # Create config directory
 mkdir -p /config
 
-# Create config.json from Home Assistant settings
-cat > /config/config.json << EOF
-{
-  "SPOTIFY_CLIENT_ID": "${SPOTIFY_CLIENT_ID}",
-  "SPOTIFY_CLIENT_SECRET": "${SPOTIFY_CLIENT_SECRET}",
-  "SPOTIFY_REDIRECT_URI": "http://homeassistant.local:5000/callback",
-  "SPOTIFY_SCOPE": "user-read-currently-playing",
-  "WLED_IPS": ${WLED_IPS},
-  "REFRESH_INTERVAL": ${REFRESH_INTERVAL},
-  "CACHE_DURATION": ${CACHE_DURATION},
-  "MAX_RETRIES": 3,
-  "RETRY_DELAY": 2
-}
-EOF
+# Create config.json from Home Assistant settings using jq for safe JSON generation
+jq -n \
+  --arg client_id "$SPOTIFY_CLIENT_ID" \
+  --arg client_secret "$SPOTIFY_CLIENT_SECRET" \
+  --arg redirect_uri "http://homeassistant.local:5000/callback" \
+  --arg scope "user-read-currently-playing" \
+  --argjson wled_ips "$WLED_IPS" \
+  --argjson refresh_interval "$REFRESH_INTERVAL" \
+  --argjson cache_duration "$CACHE_DURATION" \
+  '{
+    SPOTIFY_CLIENT_ID: $client_id,
+    SPOTIFY_CLIENT_SECRET: $client_secret,
+    SPOTIFY_REDIRECT_URI: $redirect_uri,
+    SPOTIFY_SCOPE: $scope,
+    WLED_IPS: $wled_ips,
+    REFRESH_INTERVAL: $refresh_interval,
+    CACHE_DURATION: $cache_duration,
+    MAX_RETRIES: 3,
+    RETRY_DELAY: 2
+  }' > /config/config.json
 
 bashio::log.info "Starting SpotifyToWLED..."
 bashio::log.info "Spotify Client ID: ${SPOTIFY_CLIENT_ID:0:10}..."

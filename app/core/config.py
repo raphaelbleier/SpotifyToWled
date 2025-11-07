@@ -4,7 +4,7 @@ Configuration management with validation and persistence
 import json
 import os
 import logging
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Tuple
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -65,7 +65,7 @@ class Config:
             logger.error(f"Error saving config: {e}")
             return False
     
-    def validate(self) -> tuple[bool, List[str]]:
+    def validate(self) -> Tuple[bool, List[str]]:
         """
         Validate configuration
         Returns: (is_valid, list_of_errors)

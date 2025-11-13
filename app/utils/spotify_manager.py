@@ -4,6 +4,7 @@ Spotify API manager with improved error handling
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import logging
+import os
 from typing import Optional, Dict
 
 logger = logging.getLogger(__name__)
@@ -13,12 +14,17 @@ class SpotifyManager:
     """Manage Spotify API interactions with caching"""
     
     def __init__(self, client_id: str, client_secret: str, 
-                 redirect_uri: str, scope: str):
+                 redirect_uri: str, scope: str, cache_path: str = None):
         self.client_id = client_id
         self.client_secret = client_secret
         self.redirect_uri = redirect_uri
         self.scope = scope
+        self.cache_path = cache_path or os.path.join(
+            os.environ.get('CONFIG_PATH', '/config').rsplit('/', 1)[0],
+            '.spotify_cache'
+        )
         self._sp = None
+        self._auth_manager = None
         self._last_track_id = None
         self._track_cache = {}
         self._cache_duration = 5
@@ -31,13 +37,15 @@ class SpotifyManager:
             True if successful, False otherwise
         """
         try:
-            auth_manager = SpotifyOAuth(
+            self._auth_manager = SpotifyOAuth(
                 client_id=self.client_id,
                 client_secret=self.client_secret,
                 redirect_uri=self.redirect_uri,
-                scope=self.scope
+                scope=self.scope,
+                cache_path=self.cache_path,
+                open_browser=False  # Don't try to open browser in Docker/headless
             )
-            self._sp = spotipy.Spotify(auth_manager=auth_manager)
+            self._sp = spotipy.Spotify(auth_manager=self._auth_manager)
             
             # Test the connection
             self._sp.current_user()
@@ -47,6 +55,50 @@ class SpotifyManager:
         except Exception as e:
             logger.error(f"✗ Spotify authentication failed: {e}")
             self._sp = None
+            return False
+    
+    def get_auth_url(self) -> Optional[str]:
+        """
+        Get the authorization URL for OAuth flow
+        
+        Returns:
+            Authorization URL or None if auth manager not initialized
+        """
+        if not self._auth_manager:
+            logger.error("Auth manager not initialized")
+            return None
+        
+        return self._auth_manager.get_authorize_url()
+    
+    def handle_callback(self, code: str) -> bool:
+        """
+        Handle OAuth callback with authorization code
+        
+        Args:
+            code: Authorization code from Spotify
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            if not self._auth_manager:
+                logger.error("Auth manager not initialized")
+                return False
+            
+            # Get token using the code
+            token_info = self._auth_manager.get_access_token(code, as_dict=True)
+            
+            if token_info:
+                # Re-initialize Spotify client with the new token
+                self._sp = spotipy.Spotify(auth_manager=self._auth_manager)
+                logger.info("✓ Successfully authenticated with Spotify via callback")
+                return True
+            else:
+                logger.error("Failed to get access token from code")
+                return False
+                
+        except Exception as e:
+            logger.error(f"Error handling OAuth callback: {e}")
             return False
     
     def get_current_track(self) -> Optional[Dict]:

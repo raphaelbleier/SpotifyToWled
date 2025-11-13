@@ -12,6 +12,10 @@ Sync your Spotify album colors with WLED devices directly from Home Assistant!
 
 SpotifyToWLED is a Home Assistant add-on that synchronizes the colors from your currently playing Spotify album covers with your WLED LED devices. Experience an immersive, dynamic lighting experience that matches your music.
 
+This addon supports two modes:
+- **Standalone Mode**: Runs the full SpotifyToWLED application within Home Assistant
+- **Integration Mode**: Connects to an external Docker server running SpotifyToWLED (recommended for multi-instance setups)
+
 ## Features
 
 - 🎨 **Multiple Color Extraction Modes**: Vibrant, Dominant, or Average color selection
@@ -21,6 +25,7 @@ SpotifyToWLED is a Home Assistant add-on that synchronizes the colors from your 
 - 🌐 **Web Interface**: Beautiful Bootstrap 5 UI accessible from Home Assistant
 - ⚡ **Performance Optimized**: API caching and smart track detection
 - 🔒 **Secure**: No security vulnerabilities (CodeQL verified)
+- 🔗 **Integration Mode**: Connect to external Docker server for centralized management
 
 ## Installation
 
@@ -32,16 +37,18 @@ SpotifyToWLED is a Home Assistant add-on that synchronizes the colors from your 
    - Find "SpotifyToWLED" in the add-on store
    - Click **Install**
 
-3. **Configure**:
-   - Get your Spotify credentials from [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
-   - Add your WLED device IP addresses
-   - Save configuration
+3. **Configure** (see configuration sections below based on your chosen mode)
 
 4. **Start**: Click **Start** and check the logs
 
 ## Configuration
 
+### Mode 1: Standalone (Run everything in Home Assistant)
+
+Use this mode if you want to run SpotifyToWLED entirely within Home Assistant.
+
 ```yaml
+mode: "standalone"
 spotify_client_id: "your_spotify_client_id"
 spotify_client_secret: "your_spotify_client_secret"
 wled_ips:
@@ -52,35 +59,112 @@ cache_duration: 5
 color_extraction_method: "vibrant"
 ```
 
-### Option: `spotify_client_id`
+### Mode 2: Integration (Connect to External Docker Server)
 
-Your Spotify application Client ID. Get it from [Spotify Developer Dashboard](https://developer.spotify.com/dashboard).
+Use this mode if you already have SpotifyToWLED running in Docker elsewhere and want to access it through Home Assistant.
 
-### Option: `spotify_client_secret`
+```yaml
+mode: "integration"
+server_url: "http://192.168.1.50:5000"
+```
 
-Your Spotify application Client Secret.
+**Benefits of Integration Mode:**
+- Lighter resource usage in Home Assistant
+- Share one SpotifyToWLED instance across multiple Home Assistant instances
+- Easier to manage updates centrally
+- Better for advanced Docker/Portainer setups
 
-### Option: `wled_ips`
+### Configuration Options
 
-List of WLED device IP addresses on your network.
+#### Required Settings (Standalone Mode)
 
-### Option: `refresh_interval`
+| Setting | Description | Example |
+|---------|-------------|---------|
+| `mode` | Operating mode | `standalone` or `integration` |
+| `spotify_client_id` | Your Spotify Client ID | `abc123...` |
+| `spotify_client_secret` | Your Spotify Client Secret | `xyz789...` |
+| `wled_ips` | List of WLED device IPs | `["192.168.1.100"]` |
 
-How often to check for track changes (in seconds). Default: 30
+#### Required Settings (Integration Mode)
 
-### Option: `cache_duration`
+| Setting | Description | Example |
+|---------|-------------|---------|
+| `mode` | Operating mode | `integration` |
+| `server_url` | URL of your Docker server | `http://192.168.1.50:5000` |
 
-How long to cache API responses (in seconds). Default: 5
+#### Optional Settings (Standalone Mode Only)
 
-### Option: `color_extraction_method`
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `refresh_interval` | `30` | Check for track changes every N seconds |
+| `cache_duration` | `5` | Cache API responses for N seconds |
+| `color_extraction_method` | `vibrant` | Color mode: `vibrant`, `dominant`, or `average` |
 
-Color extraction method: `vibrant`, `dominant`, or `average`. Default: `vibrant`
+## Getting Spotify Credentials
+
+1. Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
+2. Log in with your Spotify account
+3. Click **Create an App**
+4. Fill in:
+   - **App name**: SpotifyToWLED
+   - **App description**: Sync album colors with WLED
+   - Accept terms and click **Create**
+5. You'll see your **Client ID** and **Client Secret**
+6. Click **Edit Settings**
+7. Add Redirect URI: `http://homeassistant.local:5000/callback` (or your HA IP)
+8. Click **Save**
 
 ## Web Interface
 
 Access the web interface through:
-- Home Assistant Ingress (click "Open Web UI")
-- Direct URL: `http://homeassistant.local:5000`
+- **Standalone Mode**: Home Assistant Ingress (click "Open Web UI")
+- **Integration Mode**: Proxied through the addon to your external server
+- **Direct URL**: `http://homeassistant.local:5000`
+
+## Using with Home Assistant Automations
+
+### Example: Start/Stop with Presence
+
+```yaml
+automation:
+  - alias: "Start SpotifyToWLED when home"
+    trigger:
+      - platform: state
+        entity_id: person.your_name
+        to: "home"
+    action:
+      - service: hassio.addon_start
+        data:
+          addon: local_spotifytowled
+          
+  - alias: "Stop SpotifyToWLED when away"
+    trigger:
+      - platform: state
+        entity_id: person.your_name
+        to: "not_home"
+    action:
+      - service: hassio.addon_stop
+        data:
+          addon: local_spotifytowled
+```
+
+## Troubleshooting
+
+### Integration Mode Issues
+
+1. **Can't connect to external server**
+   - Verify server URL is correct and accessible from Home Assistant
+   - Check firewall rules
+   - Ensure the Docker server is running: `docker ps | grep spotifytowled`
+   - Test connectivity: `curl http://your-server:5000/health`
+
+2. **502 Bad Gateway**
+   - Server is not responding
+   - Check Docker server logs: `docker logs spotifytowled`
+
+### Standalone Mode Issues
+
+See the main troubleshooting section in the [full documentation](https://github.com/raphaelbleier/SpotifyToWled)
 
 ## Support
 
@@ -89,6 +173,11 @@ For issues, feature requests, or questions:
 - Documentation: See README.md in the repository
 
 ## Changelog
+
+### 2.1.0
+- Added Integration mode for connecting to external Docker servers
+- Improved proxy support for multi-instance setups
+- Enhanced configuration flexibility
 
 ### 2.0.0
 - Initial Home Assistant add-on release

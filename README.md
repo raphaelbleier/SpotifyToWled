@@ -2,6 +2,15 @@
 
 Bring your music to life! **SpotifyToWLED** syncs the color palette of your Spotify album covers with your WLED LEDs for a vibrant, immersive experience.
 
+## ✨ What's New in v2.1
+
+- 🔐 **Fixed Docker Spotify authentication** - No more "Address already in use" errors
+- 🔗 **OAuth callback route** for seamless Spotify login in Docker/headless environments
+- 💾 **Token caching** - No need to re-authenticate on every restart
+- 🏠 **Home Assistant integration mode** - Connect to external Docker servers
+- 🔄 **Proxy mode** for lightweight HA addon deployment
+- 📝 **Enhanced documentation** for all deployment scenarios
+
 ## ✨ What's New in v2.0
 
 - 🏗️ **Restructured codebase** with proper modular architecture
@@ -83,7 +92,11 @@ docker-compose up -d
    ```
 
 5. **Configure the application**:
+   - Get your Spotify credentials from [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
+   - In Spotify Dashboard, add redirect URI: `http://localhost:5000/callback` (or your server IP)
    - Enter your Spotify **Client ID** and **Client Secret**
+   - Click **Save Configuration**
+   - Click **Authenticate with Spotify** button and log in
    - Add your WLED device IP addresses
    - Adjust refresh interval if needed
    - Choose your preferred color extraction method

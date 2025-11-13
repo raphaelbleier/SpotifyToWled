@@ -181,3 +181,46 @@ def register_routes(app):
             'version': '2.0.0',
             'sync_running': sync_engine.is_running
         })
+    
+    @app.route('/callback')
+    def spotify_callback():
+        """Handle Spotify OAuth callback"""
+        try:
+            code = request.args.get('code')
+            error = request.args.get('error')
+            
+            if error:
+                logger.error(f"Spotify OAuth error: {error}")
+                flash(f'Spotify authorization failed: {error}', 'danger')
+                return redirect(url_for('index'))
+            
+            if not code:
+                logger.error("No authorization code received")
+                flash('No authorization code received from Spotify', 'danger')
+                return redirect(url_for('index'))
+            
+            # Handle the callback
+            if sync_engine.handle_spotify_callback(code):
+                flash('Successfully authenticated with Spotify!', 'success')
+            else:
+                flash('Failed to complete Spotify authentication', 'danger')
+            
+            return redirect(url_for('index'))
+            
+        except Exception as e:
+            logger.error(f"Error in Spotify callback: {e}")
+            flash('An error occurred during Spotify authentication', 'danger')
+            return redirect(url_for('index'))
+    
+    @app.route('/api/spotify/auth-url')
+    def api_spotify_auth_url():
+        """Get Spotify authorization URL"""
+        try:
+            auth_url = sync_engine.get_spotify_auth_url()
+            if auth_url:
+                return jsonify({'success': True, 'auth_url': auth_url})
+            else:
+                return jsonify({'success': False, 'message': 'Failed to generate auth URL'}), 400
+        except Exception as e:
+            logger.error(f"Error generating auth URL: {e}")
+            return jsonify({'success': False, 'message': 'An error occurred'}), 500

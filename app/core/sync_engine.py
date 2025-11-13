@@ -51,6 +51,50 @@ class SyncEngine:
             logger.error(f"Failed to initialize Spotify: {e}")
             return False
     
+    def get_spotify_auth_url(self) -> Optional[str]:
+        """
+        Get Spotify authorization URL for OAuth flow
+        
+        Returns:
+            Authorization URL or None
+        """
+        try:
+            if not self.spotify_manager:
+                # Initialize spotify manager if not already done
+                self.spotify_manager = SpotifyManager(
+                    client_id=config.get("SPOTIFY_CLIENT_ID"),
+                    client_secret=config.get("SPOTIFY_CLIENT_SECRET"),
+                    redirect_uri=config.get("SPOTIFY_REDIRECT_URI"),
+                    scope=config.get("SPOTIFY_SCOPE")
+                )
+                # Initialize auth manager
+                self.spotify_manager.authenticate()
+            
+            return self.spotify_manager.get_auth_url()
+        except Exception as e:
+            logger.error(f"Failed to get auth URL: {e}")
+            return None
+    
+    def handle_spotify_callback(self, code: str) -> bool:
+        """
+        Handle Spotify OAuth callback
+        
+        Args:
+            code: Authorization code from Spotify
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        try:
+            if not self.spotify_manager:
+                logger.error("Spotify manager not initialized")
+                return False
+            
+            return self.spotify_manager.handle_callback(code)
+        except Exception as e:
+            logger.error(f"Failed to handle callback: {e}")
+            return False
+    
     def start(self) -> bool:
         """
         Start the sync loop in a background thread

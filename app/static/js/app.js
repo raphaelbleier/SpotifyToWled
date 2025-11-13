@@ -111,6 +111,26 @@ async function checkWledHealth(ip) {
     }
 }
 
+// Authenticate with Spotify
+async function authenticateSpotify() {
+    try {
+        showLoading();
+        const response = await fetch(`${API_BASE}/spotify/auth-url`);
+        const data = await response.json();
+        
+        if (data.success && data.auth_url) {
+            // Open Spotify auth in new window
+            window.location.href = data.auth_url;
+        } else {
+            showError(data.message || 'Failed to get authentication URL');
+        }
+    } catch (error) {
+        showError('Error getting auth URL: ' + error.message);
+    } finally {
+        hideLoading();
+    }
+}
+
 // Update status in real-time
 async function updateStatus() {
     try {

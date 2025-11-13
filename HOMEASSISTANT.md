@@ -4,9 +4,40 @@ This guide explains how to integrate SpotifyToWLED with Home Assistant.
 
 ## Installation Methods
 
-### Method 1: Home Assistant Add-on (Recommended)
+You can run SpotifyToWLED with Home Assistant in two ways:
 
-The easiest way to run SpotifyToWLED on Home Assistant is using the official add-on.
+### Method 1: Standalone Add-on (All-in-One)
+
+Run the complete SpotifyToWLED application within Home Assistant. Best for simple setups.
+
+**Pros:**
+- Everything in one place
+- No external dependencies
+- Easy to configure
+
+**Cons:**
+- Uses more Home Assistant resources
+- Separate config per HA instance
+
+### Method 2: Integration Mode (Connect to Docker Server)
+
+Connect your Home Assistant to an external SpotifyToWLED Docker server. Best for advanced setups.
+
+**Pros:**
+- Lighter on Home Assistant resources
+- Share one server across multiple HA instances
+- Centralized management via Portainer
+- Easier to update and maintain
+
+**Cons:**
+- Requires external Docker server
+- Additional setup step
+
+---
+
+## Standalone Add-on Installation
+
+The easiest way to run SpotifyToWLED is using the official add-on in standalone mode.
 
 #### Step 1: Add Repository
 
@@ -29,6 +60,7 @@ The easiest way to run SpotifyToWLED on Home Assistant is using the official add
 2. Fill in your settings:
 
 ```yaml
+mode: "standalone"
 spotify_client_id: "your_client_id_here"
 spotify_client_secret: "your_client_secret_here"
 wled_ips:
@@ -53,15 +85,55 @@ color_extraction_method: "vibrant"
 
 - Click **Open Web UI** button
 - Or access via Ingress in Home Assistant
-- Configure Spotify credentials and WLED devices
 
-### Method 2: Docker Container in Home Assistant
+---
 
-If you prefer to run as a standalone Docker container:
+## Integration Mode Installation
 
-1. Install **Portainer** add-on from Home Assistant
-2. Follow the [Docker Deployment Guide](DOCKER.md)
-3. Access at `http://homeassistant.local:5000`
+This method assumes you already have SpotifyToWLED running in Docker (via Portainer or docker-compose).
+
+### Step 1: Deploy SpotifyToWLED Docker Server
+
+First, set up the Docker server following the [Docker Deployment Guide](DOCKER.md).
+
+**Quick Docker setup:**
+```bash
+docker run -d \
+  --name spotifytowled \
+  -p 5000:5000 \
+  -v $(pwd)/config:/config \
+  -v $(pwd)/data:/data \
+  --restart unless-stopped \
+  ghcr.io/raphaelbleier/spotifytowled:latest
+```
+
+Configure it via the web UI at `http://your-docker-host:5000`
+
+### Step 2: Install Home Assistant Add-on
+
+Follow steps 1-2 from "Standalone Add-on Installation" above.
+
+### Step 3: Configure Integration Mode
+
+1. Go to the **Configuration** tab
+2. Set configuration to integration mode:
+
+```yaml
+mode: "integration"
+server_url: "http://192.168.1.50:5000"
+```
+
+Replace `192.168.1.50` with your Docker server's IP address.
+
+3. Click **Save**
+
+### Step 4: Start and Access
+
+1. Click **Start**
+2. Click **Open Web UI** - it will proxy to your Docker server
+3. All configuration is done on the Docker server
+
+**Note:** In integration mode, the Spotify credentials and WLED devices are configured on the Docker server, not in the Home Assistant addon config.
 
 ## Getting Spotify Credentials
 

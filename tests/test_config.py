@@ -57,6 +57,17 @@ class TestConfig(unittest.TestCase):
         self.assertTrue(is_valid)
         self.assertEqual(len(errors), 0)
     
+    def test_custom_redirect_uri(self):
+        """Test custom redirect URI configuration"""
+        custom_uri = 'http://192.168.1.50:5000/callback'
+        self.config.set('SPOTIFY_REDIRECT_URI', custom_uri)
+        self.assertEqual(self.config.get('SPOTIFY_REDIRECT_URI'), custom_uri)
+        
+        # Save and reload to verify persistence
+        self.config.save()
+        new_config = Config(config_path=self.temp_file.name)
+        self.assertEqual(new_config.get('SPOTIFY_REDIRECT_URI'), custom_uri)
+    
     def test_validation_missing_credentials(self):
         """Test validation with missing Spotify credentials"""
         self.config.set('SPOTIFY_CLIENT_ID', '')

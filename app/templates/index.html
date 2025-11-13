@@ -139,6 +139,15 @@
                                value="{{ spotify_client_secret }}" required>
                     </div>
                     <div class="mb-3">
+                        <label class="form-label">Redirect URI</label>
+                        <input type="text" name="redirect_uri" class="form-control" 
+                               value="{{ spotify_redirect_uri }}" required>
+                        <small class="form-text text-muted">
+                            Must match the redirect URI in your <a href="https://developer.spotify.com/dashboard" target="_blank">Spotify Dashboard</a>. 
+                            Example: <code>http://your-server-ip:5000/callback</code>
+                        </small>
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label">Refresh Interval (seconds)</label>
                         <input type="number" name="refresh_interval" class="form-control" 
                                value="{{ refresh_interval }}" min="1" required>

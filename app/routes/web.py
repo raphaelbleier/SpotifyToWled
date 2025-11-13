@@ -30,6 +30,7 @@ def register_routes(app):
             color_method=status.get('color_extraction_method', 'vibrant'),
             spotify_client_id=config.get('SPOTIFY_CLIENT_ID', ''),
             spotify_client_secret=config.get('SPOTIFY_CLIENT_SECRET', ''),
+            spotify_redirect_uri=config.get('SPOTIFY_REDIRECT_URI', 'http://localhost:5000/callback'),
             refresh_interval=config.get('REFRESH_INTERVAL', 30),
             wled_ips=config.get('WLED_IPS', []),
             spotify_authenticated=status.get('spotify_authenticated', False)
@@ -72,6 +73,7 @@ def register_routes(app):
         try:
             client_id = request.form.get('client_id', '').strip()
             client_secret = request.form.get('client_secret', '').strip()
+            redirect_uri = request.form.get('redirect_uri', '').strip()
             
             # Validate and convert refresh interval with proper error handling
             try:
@@ -85,6 +87,7 @@ def register_routes(app):
             
             config.set('SPOTIFY_CLIENT_ID', client_id)
             config.set('SPOTIFY_CLIENT_SECRET', client_secret)
+            config.set('SPOTIFY_REDIRECT_URI', redirect_uri)
             config.set('REFRESH_INTERVAL', refresh_interval)
             
             config.save()

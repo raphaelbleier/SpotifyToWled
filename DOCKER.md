@@ -26,6 +26,33 @@ docker run -d \
 docker-compose up -d
 ```
 
+## Initial Setup and Spotify Authentication
+
+After deploying the container, you need to authenticate with Spotify:
+
+1. **Access the web interface**: `http://your-server-ip:5000`
+
+2. **Configure Spotify Credentials**:
+   - Get credentials from [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
+   - In the Spotify Dashboard, add redirect URI: `http://your-server-ip:5000/callback`
+   - Enter Client ID and Client Secret in the web UI
+   - Click "Save Configuration"
+
+3. **Authenticate with Spotify**:
+   - Click the "Authenticate with Spotify" button
+   - Log in with your Spotify account
+   - Authorize the application
+   - You'll be redirected back to the app
+
+4. **Add WLED Devices**:
+   - Enter your WLED device IP addresses
+   - Click "Add Device" for each one
+
+5. **Start Sync**:
+   - Click "Start Sync" to begin syncing colors
+
+**Note:** The authentication token is cached in `/config/.spotify_cache`, so you won't need to re-authenticate unless the token expires or you change credentials.
+
 ## Deploying on Portainer
 
 ### Method 1: Using Docker Compose (Recommended)

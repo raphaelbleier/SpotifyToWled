@@ -65,6 +65,44 @@ class TestColorExtractor(unittest.TestCase):
         # Saturation should be between 0 and 1
         self.assertGreaterEqual(sat, 0)
         self.assertLessEqual(sat, 1)
+    
+    def test_validate_rgb_normal_values(self):
+        """Test RGB validation with normal values"""
+        r, g, b = ColorExtractor.validate_rgb(128, 64, 200)
+        self.assertEqual(r, 128)
+        self.assertEqual(g, 64)
+        self.assertEqual(b, 200)
+    
+    def test_validate_rgb_clamp_high(self):
+        """Test RGB validation clamps values above 255"""
+        r, g, b = ColorExtractor.validate_rgb(300, 256, 1000)
+        self.assertEqual(r, 255)
+        self.assertEqual(g, 255)
+        self.assertEqual(b, 255)
+    
+    def test_validate_rgb_clamp_low(self):
+        """Test RGB validation clamps negative values to 0"""
+        r, g, b = ColorExtractor.validate_rgb(-10, -1, -100)
+        self.assertEqual(r, 0)
+        self.assertEqual(g, 0)
+        self.assertEqual(b, 0)
+    
+    def test_validate_rgb_mixed_clamping(self):
+        """Test RGB validation with mixed values needing clamping"""
+        r, g, b = ColorExtractor.validate_rgb(300, 128, -50)
+        self.assertEqual(r, 255)
+        self.assertEqual(g, 128)
+        self.assertEqual(b, 0)
+    
+    def test_validate_rgb_edge_values(self):
+        """Test RGB validation with edge values"""
+        # Min edge
+        r, g, b = ColorExtractor.validate_rgb(0, 0, 0)
+        self.assertEqual((r, g, b), (0, 0, 0))
+        
+        # Max edge
+        r, g, b = ColorExtractor.validate_rgb(255, 255, 255)
+        self.assertEqual((r, g, b), (255, 255, 255))
 
 
 if __name__ == '__main__':

@@ -81,6 +81,28 @@ class TestWLEDController(unittest.TestCase):
         # Initially unknown
         status = self.controller.get_device_status(ip)
         self.assertEqual(status['status'], 'unknown')
+    
+    @patch('app.utils.wled_controller.requests.post')
+    def test_set_color_clamps_values(self, mock_post):
+        """Test that color values are clamped to valid LED range (0-255)"""
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_post.return_value = mock_response
+        
+        # Test with values that need clamping
+        result = self.controller.set_color('192.168.1.100', 300, -50, 128)
+        
+        self.assertTrue(result)
+        
+        # Verify the clamped values were sent in the payload
+        call_args = mock_post.call_args
+        payload = call_args[1]['json']
+        sent_color = payload['seg'][0]['col'][0]
+        
+        # Should be clamped to [255, 0, 128]
+        self.assertEqual(sent_color[0], 255)  # 300 -> 255
+        self.assertEqual(sent_color[1], 0)    # -50 -> 0
+        self.assertEqual(sent_color[2], 128)  # 128 -> 128
 
 
 if __name__ == '__main__':

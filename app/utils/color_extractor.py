@@ -34,7 +34,7 @@ class ColorExtractor:
             method: Extraction method ('vibrant', 'dominant', 'average')
         
         Returns:
-            RGB tuple (r, g, b)
+            RGB tuple (r, g, b) with values guaranteed to be in LED-compatible range (0-255)
         """
         # Check cache first
         if self._is_cache_valid(image_url):
@@ -55,6 +55,9 @@ class ColorExtractor:
                 color = self._get_average_color(response.content)
             else:
                 color = self._get_vibrant_color(response.content)
+            
+            # Validate and ensure color is in LED-compatible range (0-255)
+            color = self.validate_rgb(*color)
             
             # Cache the result
             self._cache[image_url] = {
@@ -134,6 +137,22 @@ class ColorExtractor:
         if max_c == 0:
             return 0
         return (max_c - min_c) / max_c
+    
+    @staticmethod
+    def validate_rgb(r: int, g: int, b: int) -> Tuple[int, int, int]:
+        """
+        Validate and clamp RGB values to LED-compatible range (0-255)
+        
+        Args:
+            r, g, b: RGB color values
+            
+        Returns:
+            Clamped RGB tuple with values guaranteed to be in 0-255 range
+        """
+        r = max(0, min(255, int(r)))
+        g = max(0, min(255, int(g)))
+        b = max(0, min(255, int(b)))
+        return (r, g, b)
     
     @staticmethod
     def rgb_to_hex(r: int, g: int, b: int) -> str:

@@ -23,11 +23,16 @@ class WLEDController:
         
         Args:
             ip: WLED device IP address
-            r, g, b: RGB color values (0-255)
+            r, g, b: RGB color values (will be clamped to 0-255 for LED compatibility)
         
         Returns:
             True if successful, False otherwise
         """
+        # Ensure RGB values are in valid LED range (0-255)
+        r = max(0, min(255, int(r)))
+        g = max(0, min(255, int(g)))
+        b = max(0, min(255, int(b)))
+        
         url = f"http://{ip}/json/state"
         payload = {
             "seg": [{
